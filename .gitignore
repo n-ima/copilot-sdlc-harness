@@ -1,0 +1,12 @@
+# ローカルセッション/エディタ固有の設定（テンプレートとして配布するリポジトリには含めない）
+.claude/settings.local.json
+.vscode/*.local.json
+
+# OS/エディタの生成物
+.DS_Store
+Thumbs.db
+
+# 依存関係・ビルド成果物（各プロジェクトの技術スタックに応じて追記する）
+node_modules/
+dist/
+build/

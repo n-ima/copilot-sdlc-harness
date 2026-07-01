@@ -1,0 +1,42 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "bash .github/hooks/scripts/guard-template-edit.sh",
+        "windows": "powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/scripts/guard-template-edit.ps1",
+        "linux": "bash .github/hooks/scripts/guard-template-edit.sh",
+        "osx": "bash .github/hooks/scripts/guard-template-edit.sh",
+        "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "bash .github/hooks/scripts/guard-dangerous-git.sh",
+        "windows": "powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/scripts/guard-dangerous-git.ps1",
+        "linux": "bash .github/hooks/scripts/guard-dangerous-git.sh",
+        "osx": "bash .github/hooks/scripts/guard-dangerous-git.sh",
+        "timeout": 5
+      }
+    ],
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "bash .github/hooks/scripts/inject-progress.sh",
+        "windows": "powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/scripts/inject-progress.ps1",
+        "linux": "bash .github/hooks/scripts/inject-progress.sh",
+        "osx": "bash .github/hooks/scripts/inject-progress.sh",
+        "timeout": 5
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "bash .github/hooks/scripts/warn-stale-gate.sh",
+        "windows": "powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/scripts/warn-stale-gate.ps1",
+        "linux": "bash .github/hooks/scripts/warn-stale-gate.sh",
+        "osx": "bash .github/hooks/scripts/warn-stale-gate.sh",
+        "timeout": 5
+      }
+    ]
+  }
+}
