@@ -31,8 +31,9 @@ handoffs:
 
 ## 手順
 
-1. `docs/00-overview/progress.md` が存在しなければ `progress_template.md` からその場で作成する
-   （ファイルが存在しないだけの初回起動であり、判断を伴わない機械的な作業なので確認は不要）。
+1. `docs/00-overview/progress.md` が存在しなければ `progress_template.md` から、
+   `docs/00-overview/learnings.md` が存在しなければ `learnings_template.md` から、
+   その場で作成する（判断を伴わない機械的な作業なので確認は不要）。
 2. `requirements/memo.md`、`docs/00-overview/progress.md`、`docs/01-requirements/` 〜
    `docs/05-release/` の中身を確認し、`gate-check` スキル（`.github/skills/gate-check/SKILL.md`）
    の判定ロジックに従って各フェーズを「未着手 / 進行中 / ゲート承認待ち / 完了」で判定する。
