@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# SessionStart hook: フェーズゲート状況(GATE_STATUS)と教訓ログ(learnings)を会話開始時に自動注入する。
+# SessionStart/PreCompact hook: フェーズゲート状況(GATE_STATUS)と教訓ログ(learnings)を
+# 会話開始時およびコンテキスト圧縮前に自動注入する(圧縮で注入済み情報が失われる穴を塞ぐ)。
+event="${1:-SessionStart}"
 progress="docs/00-overview/progress.md"
 learnings="docs/00-overview/learnings.md"
 
@@ -20,4 +22,4 @@ if [[ -f "$learnings" ]]; then
 fi
 
 esc=$(printf '%b' "$ctx" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
-printf '{"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "%s"}}\n' "$esc"
+printf '{"hookSpecificOutput": {"hookEventName": "%s", "additionalContext": "%s"}}\n' "$event" "$esc"

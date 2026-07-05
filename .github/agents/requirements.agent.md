@@ -21,6 +21,8 @@ handoffs:
 ## 進め方
 
 1. `requirements/memo.md` を読み、内容を要約して認識合わせをする。
+   ファイルが存在しない場合は「作りたいアプリの概要をざっくりで良いので教えてください」と
+   依頼し、回答を `requirements/memo.md` として保存することを提案する。
 2. `requirements-elicitation` スキルのチェックリストに沿って、不足・曖昧な点をカテゴリごとにまとめて質問する。
 3. 回答が得られたら `docs/01-requirements/requirements_template.md` をコピーして
    `docs/01-requirements/requirements.md` を作成・更新する（ユーザーストーリー + Given/When/Then）。

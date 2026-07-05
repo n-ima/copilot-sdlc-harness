@@ -1,4 +1,6 @@
-﻿# SessionStart hook: フェーズゲート状況(GATE_STATUS)と教訓ログ(learnings)を会話開始時に自動注入する。
+﻿# SessionStart/PreCompact hook: フェーズゲート状況(GATE_STATUS)と教訓ログ(learnings)を
+# 会話開始時およびコンテキスト圧縮前に自動注入する(圧縮で注入済み情報が失われる穴を塞ぐ)。
+param([string]$EventName = "SessionStart")
 $ErrorActionPreference = 'SilentlyContinue'
 $progress = "docs/00-overview/progress.md"
 $learnings = "docs/00-overview/learnings.md"
@@ -30,7 +32,7 @@ if (Test-Path $learnings) {
 
 $out = @{
   hookSpecificOutput = @{
-    hookEventName = "SessionStart"
+    hookEventName = $EventName
     additionalContext = $ctx
   }
 }

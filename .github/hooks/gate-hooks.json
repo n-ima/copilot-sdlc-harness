@@ -28,6 +28,16 @@
         "timeout": 5
       }
     ],
+    "PreCompact": [
+      {
+        "type": "command",
+        "command": "bash .github/hooks/scripts/inject-progress.sh PreCompact",
+        "windows": "powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/scripts/inject-progress.ps1 PreCompact",
+        "linux": "bash .github/hooks/scripts/inject-progress.sh PreCompact",
+        "osx": "bash .github/hooks/scripts/inject-progress.sh PreCompact",
+        "timeout": 5
+      }
+    ],
     "PostToolUse": [
       {
         "type": "command",
