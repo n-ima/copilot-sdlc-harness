@@ -1,4 +1,32 @@
 {
+  "permissions": {
+    "deny": [
+      "Edit(.github/agents/**)",
+      "Write(.github/agents/**)",
+      "Edit(.github/hooks/**)",
+      "Write(.github/hooks/**)",
+      "Edit(.github/workflows/**)",
+      "Write(.github/workflows/**)",
+      "Edit(.claude/settings.json)",
+      "Write(.claude/settings.json)",
+      "Edit(.claude/agents/**)",
+      "Write(.claude/agents/**)",
+      "Edit(.claude/commands/**)",
+      "Write(.claude/commands/**)",
+      "Edit(.agents/workflows/**)",
+      "Write(.agents/workflows/**)",
+      "Edit(AGENTS.md)",
+      "Write(AGENTS.md)",
+      "Edit(CLAUDE.md)",
+      "Write(CLAUDE.md)",
+      "Edit(plugin.json)",
+      "Write(plugin.json)",
+      "Edit(.vscode/settings.json)",
+      "Write(.vscode/settings.json)",
+      "Edit(docs/**/*_template.md)",
+      "Write(docs/**/*_template.md)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {

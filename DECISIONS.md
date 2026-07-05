@@ -359,3 +359,26 @@
   (b) Claude Codeプラグイン化（インストール手順が増え、テンプレートのクローン即利用に反する）。
   (c) 正を `.claude/skills/` へ移す（Copilotは読めるが、既存の全相互参照の書き換えと
   Antigravity非対応で利点が薄い）。
+
+## D026: ai-manager（姉妹プロジェクト）からの知見採用
+
+- **出典**: 同一作者の別プロジェクト ai-manager（AI秘書。Antigravityを主環境として
+  同じ「正典＋薄いポインタ」構成でマルチエージェント対応済み）の PORTABILITY.md。
+  設計思想が独立に一致していることを確認した上で、相互比較で見つかった差分のうち
+  ハーネス側に欠けていた3点を採用した。
+- **採用した項目**:
+  1. **Antigravity IDEはプロジェクト内スクリプトフックを読まない**（ai-managerでの
+     実機検証により判明）。機械的保護はIDEのDeny List（Settings → Permissions →
+     Advanced）への手動登録で代替する。AGENTS.md・README・.agents/workflows
+     アダプタ（生成文言）に反映。
+  2. **`permissions.deny` の併用**: `.claude/settings.json` にツールレベルの
+     ハードブロック（ハーネス設定ファイルとテンプレートへのEdit/Write禁止）を追加。
+     フックと合わせて二重の機械的ガードとなり、Claude Codeが3環境で最も強い
+     ガードレールを持つ。ハーネス本体の保守時は人間が一時的にdeny行を外す運用
+     （CLAUDE.mdに明記）。
+  3. **機能別の劣化モード明記**: READMEの対応表に「対応度の目安」を追加し、
+     環境ごとに何がフルで何が劣化かを利用者が着手前に判断できるようにした。
+- **逆方向の還流**: ハーネス側が優位だった「ポインタの機械生成（冪等スクリプト）+
+  validatorによる乖離検出」は、ai-manager向けの改善指示書
+  （D:\vscode-worspace\ai-manager-improvement-handover.md）として別途まとめた
+  （ai-managerはポインタを手作業維持しており、転写忘れによるドリフトのリスクがあるため）。

@@ -19,4 +19,8 @@
 - ハンドオフボタンは Claude Code には無い。フェーズ移行は案内どおり
   「新しいセッションで該当スラッシュコマンドを実行」する。
 - フックは `.claude/settings.json` に定義済み（Copilot 側と同じスクリプトを共用。
-  Windows では Git Bash が必要）。
+  Windows では Git Bash が必要）。加えて `permissions.deny` でハーネス設定ファイル
+  （agents/hooks/commands/AGENTS.md等）とテンプレートへの Edit/Write を
+  ツールレベルでハードブロックしている（フックと二重の機械的ガード）。
+  **ハーネス本体リポジトリを保守する場合**（このテンプレート自体の改修）は、
+  人間が一時的に `.claude/settings.json` の該当deny行を外して作業し、終わったら戻す。

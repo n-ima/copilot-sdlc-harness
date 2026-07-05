@@ -15,11 +15,16 @@
 | フェーズ起動 | `/03-design-architecture` 等（prompts） | 同名コマンド（`.claude/commands/`） | 同名ワークフロー（`.agents/workflows/`） |
 | サブエージェント | runSubagent | Task ツール（`.claude/agents/`） | Agent Managerの別会話 |
 | スキル | `.github/skills/` | `.claude/skills/`（正へのポインタ） | 正のファイルを直接参照 |
-| フック（機械的ガード） | ✓ `.github/hooks/` | ✓ `.claude/settings.json`（同一スクリプト共用） | ✗（指示レベル+Git保護で代替） |
+| フック（機械的ガード） | ✓ `.github/hooks/` | ✓✓ hooks（同一スクリプト共用）+ `permissions.deny` | ✗ IDEのDeny List（GUI）で代替 |
 | ハンドオフボタン | ✓ | ✗（コマンド案内に統一） | ✗（コマンド案内に統一） |
 
 どの環境でも入口は同じです: **`/00-start-project` を実行**（Copilotはプロンプト、
 Claude Codeはスラッシュコマンド、Antigravityはワークフローとして同名で存在します）。
+
+**対応度の目安**: Copilot＝フル（主環境・ハンドオフ含む） ／ Claude Code＝フル同等
+（機械的ガードはむしろ最強: hooks+permissions.denyの二重） ／ Antigravity＝フェーズゲート・
+独立レビューはフル、機械的ガードのみGUIのDeny List（Settings → Permissions → Advanced）への
+手動登録で代替（AntigravityのIDEはプロジェクト内スクリプトフックを読まないため。実機検証済みの知見）。
 
 > 2026年7月時点のGitHub Copilot / VS Codeの最新仕様（Custom Agents, Agent Skills,
 > Agent Hooks, Agent Plugins, AGENTS.md）に基づいて構築しています。特に **Agent Hooks と
