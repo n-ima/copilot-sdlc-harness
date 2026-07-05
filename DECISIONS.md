@@ -310,6 +310,7 @@
   汎用テンプレートの既定にはできない。Figmaを使うプロジェクトでは設計フェーズで
   接続すればよい）。
 
+
 ## D024: 次の一手の案内はプロンプトコマンド形式に統一
 
 - **決定**: フェーズ移行時の案内を「新しいチャットで `/03-design-architecture` を実行」の
@@ -325,3 +326,36 @@
   セッション分割表（新規チャット推奨）が矛盾したまま両方を混ぜた案内になっていた、
   の3点が原因。案内フォーマットの規定（AGENTS.mdナビゲーション責務・harness-guide）と
   ゲート後案内の書き換えで解消した。
+
+## D025: マルチプラットフォーム対応（Copilot / Claude Code / Antigravity）
+
+- **決定**: 「正のレイヤ + 薄いアダプタ」構成で3環境対応した。振る舞いの正は従来どおり
+  `AGENTS.md` + `.github/`（agents/prompts/skills/hooks）に一本化し、各環境には
+  ポインタだけのアダプタを置く（生成スクリプトで機械生成・冪等）。
+  - Claude Code: `CLAUDE.md`（`@AGENTS.md`インポート）、`.claude/commands/`（13件）、
+    `.claude/agents/`（reviewer/spec-critic/task-worker）、`.claude/skills/`（9件のポインタ）、
+    `.claude/settings.json`（既存フックスクリプトをClaude Codeスキーマで配線）
+  - Antigravity: `AGENTS.md` を直接読む + `.agents/workflows/`（13件）
+- **調査根拠**（2026年7月時点の一次情報）:
+  - Claude Code は AGENTS.md を直接サポートせず（[issue #31005](https://github.com/anthropics/claude-code/issues/31005)、
+    3000超のupvoteに未対応）、スキルも `.claude/skills/` しか探索しない
+    （`.agents/skills/` へのsymlinkは内部ファイル汚染で機能しない）。
+    そのため CLAUDE.md のインポート機能とポインタスキルで橋渡しする。
+  - Claude Code のフック（`.claude/settings.json`）はVS Code版と同一のペイロード仕様
+    （tool_input.file_path/command、hookSpecificOutput.permissionDecision）のため、
+    **既存スクリプトを無変更で共用**できる（VS CodeがClaude Code形式を採用した経緯による）。
+    Claude Code の SessionStart は compaction 後にも発火する（source=compact）ため、
+    PreCompact 相当の再注入も SessionStart 登録だけでカバーされる。
+  - Antigravity は v1.20.3 でプロジェクトレベルの AGENTS.md を正式サポート。
+    `.agents/` が特別ディレクトリで、`.agents/workflows/*.md` が /コマンドになる
+    （[Google Codelabs](https://codelabs.developers.google.com/autonomous-ai-developer-pipelines-antigravity)）。
+    フック機構は無いため、ガードレールは指示レベル+Git保護に縮退する（対応表に明記）。
+- **設計原則**: アダプタは振る舞いを持たない（起動経路の等価性ルールA-5の
+  プラットフォーム拡張）。読み替え規則（runSubagent→Task/別会話）はアダプタ内と
+  AGENTS.mdに明記。ガードも拡張し、アダプタ層（CLAUDE.md/.claude設定・agents・
+  commands/.agents/workflows）を保護対象に追加（`.claude/skills/` は動的Skill作成の
+  ため除外）。skill-authoringに「正のスキル新設時はClaude用ポインタも同時作成」を追加。
+- **捨てた選択肢**: (a) 各環境に振る舞いをコピーする（必ずドリフトする）。
+  (b) Claude Codeプラグイン化（インストール手順が増え、テンプレートのクローン即利用に反する）。
+  (c) 正を `.claude/skills/` へ移す（Copilotは読めるが、既存の全相互参照の書き換えと
+  Antigravity非対応で利点が薄い）。

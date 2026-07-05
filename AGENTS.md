@@ -1,9 +1,33 @@
 # AGENTS.md — このリポジトリで動くすべてのAIエージェント向け共通指示
 
-このファイルは GitHub Copilot（VS Code）を主対象としつつ、Copilot coding agent（cloud）、
-Claude Code、Gemini CLI など `AGENTS.md` 標準に対応する他のエージェントでも
-同じ運用ルールが効くようにするための、**唯一の正**となる指示ファイルです。
-（`.github/copilot-instructions.md` と重複させず、本ファイルに一本化しています。）
+このファイルは、このハーネスで動くすべてのAIエージェントの**唯一の正**となる
+指示ファイルです（`.github/copilot-instructions.md` と重複させず一本化）。
+GitHub Copilot と Antigravity は本ファイルを直接読み、Claude Code は
+`CLAUDE.md`（`@AGENTS.md` インポート）経由で読みます。
+
+## プラットフォーム対応（Copilot / Claude Code / Antigravity）
+
+このハーネスは3つのエージェント環境で同じ振る舞いになるよう、
+**正のレイヤ + 薄いアダプタ**の構成をとる。
+
+- **正（振る舞いの定義）**: 本ファイル、`.github/agents/*.agent.md`（役割定義）、
+  `.github/prompts/*.prompt.md`（起動指示）、`.github/skills/*/SKILL.md`（手順）。
+  **振る舞いの変更は必ずこの層だけで行う。**
+- **アダプタ（プラットフォーム固有の入口。ポインタのみで振る舞いを持たない）**:
+  - Claude Code: `CLAUDE.md`（本ファイルをインポート）、`.claude/commands/`
+    （スラッシュコマンド→正を参照）、`.claude/agents/`（サブエージェント→正を参照）、
+    `.claude/skills/`（スキルポインタ。Claude Codeは`.claude/skills/`しか探索しないため）、
+    `.claude/settings.json`（同じフックスクリプトをClaude Codeスキーマで配線）
+  - Antigravity: 本ファイルを直接読む + `.agents/workflows/`（/コマンド→正を参照）
+- **読み替え規則**: `runSubagent` は Claude Code では Task ツール（`.claude/agents/` の
+  同名サブエージェント）、Antigravity では Agent Manager の別エージェント会話。
+  ハンドオフボタンは Copilot 専用（他環境では「新しいセッションで /コマンド実行」の案内に統一）。
+- **アダプタにはプロンプト固有の手順を書かない**（起動経路の等価性ルールの
+  プラットフォーム拡張）。アダプタを直したくなったら、それは正の層を直すべきサイン。
+  正のスキルを新設したら `.claude/skills/` のポインタも同時に作る（skill-authoring参照）。
+- **ガードレールの強度差**: フックが機械的に効くのは Copilot（`.github/hooks/`）と
+  Claude Code（`.claude/settings.json`）。Antigravity にはフック機構が無いため
+  指示レベルの遵守＋Git側の保護（ブランチ保護/CODEOWNERS）に依存する。
 
 ## このリポジトリについて
 

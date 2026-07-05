@@ -1,0 +1,64 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .github/hooks/scripts/guard-template-edit.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash .github/hooks/scripts/guard-harness-config-edit.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash .github/hooks/scripts/guard-secret-leak.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .github/hooks/scripts/guard-dangerous-git.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash .github/hooks/scripts/guard-secret-leak.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .github/hooks/scripts/warn-stale-gate.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .github/hooks/scripts/inject-progress.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

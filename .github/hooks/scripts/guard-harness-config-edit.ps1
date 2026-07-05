@@ -15,14 +15,14 @@ try {
   }
 }
 
-$protectedPattern = '(^|[\\/])\.github[\\/]agents[\\/]|(^|[\\/])\.github[\\/]hooks[\\/]|(^|[\\/])\.github[\\/]workflows[\\/]|(^|[\\/])AGENTS\.md$|(^|[\\/])plugin\.json$|(^|[\\/])\.vscode[\\/]settings\.json$'
+$protectedPattern = '(^|[\\/])\.github[\\/]agents[\\/]|(^|[\\/])\.github[\\/]hooks[\\/]|(^|[\\/])\.github[\\/]workflows[\\/]|(^|[\\/])AGENTS\.md$|(^|[\\/])CLAUDE\.md$|(^|[\\/])plugin\.json$|(^|[\\/])\.vscode[\\/]settings\.json$|(^|[\\/])\.claude[\\/]settings\.json$|(^|[\\/])\.claude[\\/]agents[\\/]|(^|[\\/])\.claude[\\/]commands[\\/]|(^|[\\/])\.agents[\\/]workflows[\\/]'
 
 if ($file -and ($file -match $protectedPattern)) {
   $out = @{
     continue = $true
     hookSpecificOutput = @{
       permissionDecision = "deny"
-      permissionDecisionReason = "ハーネスの運用ルール自体(agents/hooks/workflows/AGENTS.md/plugin.json/settings.json)はエージェントが自動で書き換えません。変更が必要な場合は人間が直接編集するか、明示的な指示のもとで行ってください。"
+      permissionDecisionReason = "ハーネスの運用ルール自体(agents/hooks/workflows/commands/AGENTS.md/CLAUDE.md/plugin.json/settings.json)はエージェントが自動で書き換えません。変更が必要な場合は人間が直接編集するか、明示的な指示のもとで行ってください。"
     }
   }
 } else {

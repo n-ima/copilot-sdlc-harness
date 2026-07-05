@@ -1,5 +1,7 @@
 # ローカルセッション/エディタ固有の設定（テンプレートとして配布するリポジトリには含めない）
+# ※ .claude/settings.json（共有hooks設定）と .claude/agents,commands,skills（アダプタ）は追跡対象
 .claude/settings.local.json
+.claude/skills/.system/
 .vscode/*.local.json
 
 # OS/エディタの生成物
