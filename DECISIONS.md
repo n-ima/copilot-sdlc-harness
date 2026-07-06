@@ -423,3 +423,47 @@
   スクラッチ経由のコピーで回避した。Bashによるファイル操作はpermissions.denyの
   Edit/Write指定では止まらないことも確認された（既知の限界として記録。
   完全な防御にはGit側の保護=ブランチ保護/CODEOWNERSの併用が必要）。
+
+## D029: ブラウザ検証を「コード化テスト主・対話操作従」の2層に変更
+
+- **決定**: テストフェーズのブラウザ検証を、D013の「Playwright MCPで開いて確認し、
+  コードとして残せるものは残す」（MCP主・コード従）から反転させ、
+  **受け入れ条件の検証はPlaywrightテストコード+CLI実行を主**、対話型ブラウザ操作は
+  (a)モックアップとの視覚比較 (b)失敗デバッグ (c)コード化前の探索 の3用途に限定した。
+  対話操作の手段はプラットフォームネイティブを選ぶ:
+  Copilot=Playwright MCP(.vscode/mcp.json) / Claude Code=Playwright MCP(.mcp.json、
+  キー名mcpServers) / Antigravity=内蔵ブラウザエージェント(CDP直結・拡張不要・動画証跡)。
+- **根拠**: 2026年の実測ベンチマークで、同一カバレッジのブラウザ検証が対話型MCP操作では
+  約114Kトークン、コード化テストのCLI実行では約27Kトークン（約1/4）
+  ([ytyng 2026ベンチマーク](https://www.ytyng.com/en/blog/ai-browser-automation-tools-comparison-2026)、
+  [TestQuality 2026アーキテクチャガイド](https://testquality.com/playwright-test-agents-mcp-architecture-2026/))。
+  実務コンセンサスは「MCPは探索・即席検証、回帰保護はコード化されたPlaywright」の併用。
+  コード化はトークン以外にも、決定的・再実行可能・資産としてリポジトリに残り
+  改修サイクルとCIに再利用できる点で「docs/が正」の設計思想と一致する。
+  Playwright MCP自体は引き続きエージェント向けブラウザ操作の業界標準であり廃止しない。
+- **捨てた選択肢**: agent-browser(Vercel系、ページ表現200-400トークンでMCP比高効率)の
+  既定採用 — 有望だが新しく単一ベンダー依存のため、既定はMicrosoft参照実装のMCPを維持し
+  動向を注視する。Claude in Chromeの既定採用 — chrome-extension://コンテキスト等の
+  既知の制約があり成熟途上のため見送り。
+
+## D030: 鮮度監査（2026-07-06実施）の結果と修正
+
+- **監査内容**: 「現時点のベストプラクティスを採用しているか」を構成要素ごとに
+  最新情報（VS Code Copilot 5-6月チェンジログ・各領域の実務動向）と突き合わせた。
+- **現行どおりで問題なし**: custom agents(.agent.md)・Agent Skills（段階的開示・
+  agentskills.io標準）・Agent Hooks（8イベント・Preview）・prompt files の agent: バインド・
+  handoffs・model:auto（AI Credit課金）・AGENTS.md標準（Copilot/Antigravityネイティブ、
+  Claude CodeはCLAUDE.md経由のまま変化なし）・マルチプラットフォームアダプタ構成・
+  EARS/spec-driven・UIモックアップゲート・コンテキストロット対策・成長ループ。
+  5-6月の新機能（Agents window、リモートエージェント、enterprise-managed plugins）に
+  本ハーネスの構成を壊す変更は無い。
+- **修正した項目**:
+  1. ブラウザ検証の主従逆転（D029）。
+  2. **Copilotのスキル二重読み込み防止**: VS CodeはプロジェクトスキルをD
+     `.github/skills` に加えて `.claude/skills` からも探索するため、D025で置いた
+     Claude用ポインタが Copilot 側で正と二重に発見される恐れがある。
+     `.vscode/settings.json` に `chat.agentSkillsLocations: { ".claude/skills": false }`
+     を設定して正のみを読ませるようにした（実機で挙動確認できたら再評価する）。
+- **残課題（記録のみ）**: brownfield（既存コードベースへの適用）対応はSpec Kitの
+  /speckit.converge相当が未実装のまま（D-比較時から既知）。最初のbrownfield案件の
+  振り返りを起点に対応する。
