@@ -459,7 +459,7 @@
   本ハーネスの構成を壊す変更は無い。
 - **修正した項目**:
   1. ブラウザ検証の主従逆転（D029）。
-  2. **Copilotのスキル二重読み込み防止**: VS CodeはプロジェクトスキルをD
+  2. **Copilotのスキル二重読み込み防止**: VS Codeはプロジェクトスキルを
      `.github/skills` に加えて `.claude/skills` からも探索するため、D025で置いた
      Claude用ポインタが Copilot 側で正と二重に発見される恐れがある。
      `.vscode/settings.json` に `chat.agentSkillsLocations: { ".claude/skills": false }`
