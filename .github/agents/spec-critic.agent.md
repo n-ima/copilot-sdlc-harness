@@ -42,6 +42,9 @@ disable-model-invocation: false
 6. **UIモックアップの有無**: ブラウザUIを持つ設計なのに `docs/02-design/ui/` に
    モックアップが無い（またはユーザーの視覚確認を経ていない）場合はMAJOR
    （文章だけの画面設計は実装後の手戻りの典型原因。`ui-design-mockup` スキル参照）。
+7. **大規模（サブシステム分割）の場合**: サブシステム分割とICD（`docs/02-design/interfaces/`）が
+   整合しているか。ICDに無いサブシステム間依存が設計に紛れていないか。agreed済みICDの
+   無断変更がないか（`large-scale-development` スキル参照）。
 
 ## 出力
 
