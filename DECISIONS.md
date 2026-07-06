@@ -467,3 +467,20 @@
 - **残課題（記録のみ）**: brownfield（既存コードベースへの適用）対応はSpec Kitの
   /speckit.converge相当が未実装のまま（D-比較時から既知）。最初のbrownfield案件の
   振り返りを起点に対応する。
+
+## D031: brownfield（既存コードベース）対応の実装
+
+- **決定**: `brownfield-intake` スキルと `/11-brownfield-intake` プロンプトを新設した。
+  実装済みコードから as-is 要件・アーキテクチャ・環境情報を docs/ に逆起こしし、
+  spec-critic レビュー + gate-check 横断整合監査で文書とコードの整合を検証
+  （Spec Kit `/speckit.converge` 相当）してから GATE_STATUS を初期化し、
+  以後は差分駆動の改修サイクル（D014/A-6）に接続する。
+- **設計原則**: (1) as-is と to-be を混ぜない（改善要望は改修候補リストへ分離。
+  混ぜると差分駆動の「どこからが変更か」が壊れる）。(2) 全コードを文書化しない
+  （触る領域+システムの背骨に絞り、残りは「未逆起こし」と明記）。
+  (3) environment.md は実機確認（B-2の教訓の適用）。
+  (4) 大規模既存システムは large-scale-development と併用。
+- **根拠**: 競合比較（D015前後）およびD030の鮮度監査で「greenfield前提でbrownfield
+  未対応」が唯一の既知ギャップとして残っていた。Spec Kitのconverge、BMADのbrownfield
+  対応が示すとおり、実務の多数派は既存コードベースへの適用であり、
+  「世界最高」を名乗る上で放置できない欠落だったため実装した。
