@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>copilot-sdlc-harness — AI開発ハーネス</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #f6f8fd;
@@ -23,9 +26,16 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
-    line-height: 1.7;
+    font-family: "Inter", "Noto Sans JP", "Hiragino Sans", "Segoe UI", sans-serif;
+    font-feature-settings: "palt";
+    letter-spacing: .015em;
+    line-height: 1.75;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .stat b {
+    font-family: "Inter", "Noto Sans JP", "Hiragino Sans", "Segoe UI", sans-serif;
+    font-feature-settings: "palt";
   }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
 
@@ -46,8 +56,8 @@
     padding: 5px 14px; margin-bottom: 22px; background: rgba(13,158,148,.07);
   }
   .hero h1 {
-    font-size: clamp(30px, 5vw, 52px); font-weight: 800; letter-spacing: -.02em;
-    line-height: 1.25; margin-bottom: 18px;
+    font-size: clamp(30px, 5vw, 52px); font-weight: 900; letter-spacing: -.015em;
+    line-height: 1.28; margin-bottom: 18px;
   }
   .hero h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .hero p.lead { font-size: 17px; color: var(--muted); max-width: 720px; margin-bottom: 28px; }
@@ -281,6 +291,11 @@
         <p>長い会話ほどAIの精度は落ちる。<b>docs/ が記憶、会話は使い捨て</b>。実装は task-worker が1タスク=1独立コンテキストで実行し、セッション分割基準も数値で定義済み。</p>
       </div>
       <div class="card">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3a2.5 2.5 0 012.5 2.5c3 .8 4.5 3 4.5 6v3l2 3H3l2-3v-3c0-3 1.5-5.2 4.5-6A2.5 2.5 0 0112 3z" stroke="#2f6fed" stroke-width="2" stroke-linejoin="round"/><path d="M10 20.5a2 2 0 004 0" stroke="#2f6fed" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>次の一手をエージェントが案内</h3>
+        <p>操作手順の暗記は不要。応答の最後に<b>「次に実行するコマンド」と「新しいチャットにすべきか」</b>を必ず1行で案内。完了タスク10個超・差し戻し2往復超などの数値基準で、エージェント自身がセッション切り替えを提案する。迷ったら /98-harness-help。</p>
+      </div>
+      <div class="card">
         <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v3m0 12v3m9-9h-3M6 12H3m14.5-6.5l-2 2m-7 7l-2 2m11 0l-2-2m-7-7l-2-2" stroke="#0d9e94" stroke-width="2" stroke-linecap="round"/></svg></div>
         <h3>成長ループ</h3>
         <p>教訓は learnings.md に1行追記→<b>全セッションに自動注入</b>。リリース後の振り返りが改善提案表を生み、本体テンプレートへ還流。<b>次のプロジェクトは今日の学びから始まる</b>。</p>
@@ -463,7 +478,8 @@
       <a href="AGENTS.md">AGENTS.md（共通指示の正）</a>
     </div>
     <p>copilot-sdlc-harness — 品質とトークンコストのバランスをとった、成長し続けるAI開発ハーネス。<br>
-    このページは自己完結型HTML（ビルド不要・外部依存なし）。このハーネスのUIデザインゲートと同じ思想で作られています。</p>
+    このページはビルド不要の単一HTML（フォントのみWebフォント使用。オフライン時はシステムフォントに自動フォールバック）。<br>
+    このハーネスのUIデザインゲートと同じ思想で作られています。</p>
   </div>
 </footer>
 
