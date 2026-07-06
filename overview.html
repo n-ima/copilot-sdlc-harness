@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>copilot-sdlc-harness — AI開発ハーネス</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1526;
+    --card: #131b30;
+    --card-hover: #182238;
+    --border: #1f2b47;
+    --text: #dce4f5;
+    --muted: #7e8cad;
+    --accent: #4f8cff;
+    --accent2: #38d9c3;
+    --accent3: #b478ff;
+    --warn: #ffb454;
+    --grad: linear-gradient(135deg, #4f8cff 0%, #38d9c3 100%);
+    --grad2: linear-gradient(135deg, #b478ff 0%, #4f8cff 100%);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+  /* ヒーロー */
+  .hero {
+    position: relative;
+    padding: 88px 0 64px;
+    background:
+      radial-gradient(ellipse 800px 400px at 20% -10%, rgba(79,140,255,.18), transparent),
+      radial-gradient(ellipse 600px 400px at 85% 10%, rgba(56,217,195,.12), transparent),
+      var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; letter-spacing: .12em; color: var(--accent2);
+    border: 1px solid rgba(56,217,195,.35); border-radius: 999px;
+    padding: 5px 14px; margin-bottom: 22px; background: rgba(56,217,195,.06);
+  }
+  .hero h1 {
+    font-size: clamp(30px, 5vw, 52px); font-weight: 800; letter-spacing: -.02em;
+    line-height: 1.2; margin-bottom: 18px;
+  }
+  .hero h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p.lead { font-size: 17px; color: var(--muted); max-width: 720px; margin-bottom: 28px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 10px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; font-size: 13.5px; font-weight: 600;
+  }
+  .badge svg { flex: none; }
+
+  /* 統計 */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 14px; margin: -34px auto 0; position: relative; }
+  .stat {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px 20px; text-align: center;
+    box-shadow: 0 12px 32px rgba(0,0,0,.35);
+  }
+  .stat b { display: block; font-size: 30px; font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat span { font-size: 12.5px; color: var(--muted); }
+
+  /* セクション */
+  section { padding: 64px 0 8px; }
+  .sec-label { font-size: 12.5px; letter-spacing: .18em; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+  h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 800; margin-bottom: 12px; letter-spacing: -.01em; }
+  .sec-desc { color: var(--muted); max-width: 760px; margin-bottom: 32px; font-size: 15px; }
+
+  /* SVG図 */
+  .diagram {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+    padding: 26px; margin-bottom: 20px; overflow-x: auto;
+  }
+  .diagram svg { display: block; min-width: 720px; width: 100%; height: auto; }
+  .diagram-note { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* カードグリッド */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 16px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; transition: transform .15s, border-color .15s, background .15s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: rgba(79,140,255,.5); background: var(--card-hover); }
+  .card .ic {
+    width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px; background: rgba(79,140,255,.12);
+  }
+  .card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 8px; }
+  .card p { font-size: 13.8px; color: var(--muted); }
+  .card p b { color: var(--text); font-weight: 600; }
+
+  /* 責任分界テーブル */
+  .split-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
+  .split-table th, .split-table td { padding: 13px 18px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--border); }
+  .split-table th { background: var(--bg2); font-size: 12.5px; letter-spacing: .08em; color: var(--muted); }
+  .split-table tr:last-child td { border-bottom: none; }
+  .pill { display: inline-block; border-radius: 999px; padding: 2px 12px; font-size: 12.5px; font-weight: 700; }
+  .pill.human { background: rgba(255,180,84,.14); color: var(--warn); }
+  .pill.ai { background: rgba(56,217,195,.13); color: var(--accent2); }
+  .pill.both { background: rgba(180,120,255,.14); color: var(--accent3); }
+
+  /* フッター */
+  footer { margin-top: 72px; border-top: 1px solid var(--border); padding: 36px 0 48px; }
+  footer .links { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 14px; }
+  footer a { color: var(--accent); text-decoration: none; font-size: 14px; }
+  footer a:hover { text-decoration: underline; }
+  footer p { color: var(--muted); font-size: 12.5px; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 56px 0 48px; }
+    section { padding: 44px 0 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ ヒーロー ============ -->
+<div class="hero">
+  <div class="wrap">
+    <div class="eyebrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h7l-1 8 11-13h-7l1-7z" fill="#38d9c3"/></svg>
+      AI DEVELOPMENT HARNESS
+    </div>
+    <h1>要件定義からリリースまで、<br><span class="grad">AIが走り、人は境界を守る。</span></h1>
+    <p class="lead">
+      copilot-sdlc-harness は、GitHub Copilot / Claude Code / Antigravity の3環境で同じように動く
+      汎用開発ハーネスです。厚い要件定義と視覚的な設計ゲートで前提を固め、実装からテストまでを
+      ノンストップで自動走行。機械的なガードレールと独立レビューが品質を守り、
+      使うたびに賢くなる成長ループを備えています。
+    </p>
+    <div class="badges">
+      <span class="badge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#4f8cff" stroke-width="2"/><path d="M8 12l3 3 5-6" stroke="#4f8cff" stroke-width="2" stroke-linecap="round"/></svg>GitHub Copilot (VS Code)</span>
+      <span class="badge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#38d9c3" stroke-width="2"/><path d="M8 12l3 3 5-6" stroke="#38d9c3" stroke-width="2" stroke-linecap="round"/></svg>Claude Code</span>
+      <span class="badge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#b478ff" stroke-width="2"/><path d="M8 12l3 3 5-6" stroke="#b478ff" stroke-width="2" stroke-linecap="round"/></svg>Antigravity</span>
+      <span class="badge">🏗 新規開発 / 既存コード / 大規模サブシステム分割</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 統計 ============ -->
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><b>9</b><span>専属エージェント<br>(4つの独立レビュー経路)</span></div>
+    <div class="stat"><b>11</b><span>Agent Skills<br>(段階的開示で低コスト)</span></div>
+    <div class="stat"><b>14</b><span>スラッシュコマンド<br>(3環境で同名動作)</span></div>
+    <div class="stat"><b>6</b><span>機械的ガードフック<br>(bash / PowerShell 両対応)</span></div>
+    <div class="stat"><b>31</b><span>設計判断の記録<br>(DECISIONS.md)</span></div>
+  </div>
+</div>
+
+<!-- ============ フェーズパイプライン ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">WORKFLOW</div>
+    <h2>フェーズごとに「人の関わり方」を変える</h2>
+    <p class="sec-desc">
+      一律に「毎回確認」でも「全部自動」でもありません。前提が決まる上流は人が厚く関わり、
+      前提が固まった中流は全自動、外部に影響する境界だけ人が意思決定します。
+    </p>
+    <div class="diagram">
+      <svg viewBox="0 0 960 300" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI','Hiragino Sans',sans-serif">
+        <defs>
+          <linearGradient id="gAuto" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#38d9c3" stop-opacity=".16"/>
+            <stop offset="1" stop-color="#4f8cff" stop-opacity=".16"/>
+          </linearGradient>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8" fill="none" stroke="#7e8cad" stroke-width="1.5"/>
+          </marker>
+        </defs>
+
+        <!-- 全自動区間の帯 -->
+        <rect x="358" y="52" width="380" height="150" rx="14" fill="url(#gAuto)" stroke="#38d9c3" stroke-dasharray="5 4" stroke-opacity=".55"/>
+        <text x="548" y="42" text-anchor="middle" fill="#38d9c3" font-size="13" font-weight="700">全自動区間（人はブロッカー時のみ）</text>
+
+        <!-- フェーズボックス -->
+        <g font-size="14" font-weight="700" text-anchor="middle">
+          <rect x="20"  y="90" width="140" height="74" rx="12" fill="#131b30" stroke="#ffb454" stroke-width="2"/>
+          <text x="90" y="122" fill="#dce4f5">要件定義</text>
+          <text x="90" y="144" fill="#ffb454" font-size="11" font-weight="600">人が厚く回答</text>
+
+          <rect x="190" y="90" width="140" height="74" rx="12" fill="#131b30" stroke="#b478ff" stroke-width="2"/>
+          <text x="260" y="116" fill="#dce4f5">設計</text>
+          <text x="260" y="136" fill="#b478ff" font-size="11" font-weight="600">AIが決め</text>
+          <text x="260" y="152" fill="#b478ff" font-size="11" font-weight="600">人は最終承認1回</text>
+
+          <rect x="376" y="90" width="140" height="74" rx="12" fill="#131b30" stroke="#38d9c3" stroke-width="2"/>
+          <text x="446" y="122" fill="#dce4f5">実装</text>
+          <text x="446" y="144" fill="#38d9c3" font-size="11" font-weight="600">task-worker並走</text>
+
+          <rect x="546" y="90" width="140" height="74" rx="12" fill="#131b30" stroke="#38d9c3" stroke-width="2"/>
+          <text x="616" y="122" fill="#dce4f5">テスト</text>
+          <text x="616" y="144" fill="#38d9c3" font-size="11" font-weight="600">自動修復ループ</text>
+
+          <rect x="756" y="90" width="140" height="74" rx="12" fill="#131b30" stroke="#4f8cff" stroke-width="2"/>
+          <text x="826" y="116" fill="#dce4f5">リリース</text>
+          <text x="826" y="136" fill="#4f8cff" font-size="11" font-weight="600">環境定義に基づき</text>
+          <text x="826" y="152" fill="#4f8cff" font-size="11" font-weight="600">自動+人手は明示分</text>
+        </g>
+
+        <!-- 矢印 -->
+        <g stroke="#7e8cad" stroke-width="1.5" fill="none">
+          <line x1="160" y1="127" x2="186" y2="127" marker-end="url(#arr)"/>
+          <line x1="330" y1="127" x2="372" y2="127" marker-end="url(#arr)"/>
+          <line x1="516" y1="127" x2="542" y2="127" marker-end="url(#arr)"/>
+          <line x1="686" y1="127" x2="752" y2="127" marker-end="url(#arr)"/>
+        </g>
+
+        <!-- ゲートマーク -->
+        <g font-size="15" text-anchor="middle">
+          <text x="173" y="112">🔒</text>
+          <text x="352" y="112">🔒</text>
+          <text x="720" y="112">🔍</text>
+        </g>
+
+        <!-- 独立レビュー -->
+        <g font-size="11.5" fill="#7e8cad" text-anchor="middle">
+          <text x="90"  y="222">spec-critic が独立レビュー</text>
+          <text x="260" y="222">spec-critic + UIモックアップ視覚確認</text>
+          <text x="616" y="222">reviewer が別コンテキストで監査</text>
+          <text x="826" y="222">push/デプロイはフックが確認</text>
+        </g>
+
+        <!-- 成長ループ -->
+        <path d="M 826 172 Q 826 268 460 268 Q 90 268 90 176" fill="none" stroke="#b478ff" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#arr)" opacity=".8"/>
+        <text x="460" y="258" text-anchor="middle" fill="#b478ff" font-size="12" font-weight="600">/10-retrospective — 振り返りが次のプロジェクトのハーネスを改善する</text>
+      </svg>
+    </div>
+    <p class="diagram-note">🔒 = 人のゲート承認が必要　🔍 = 独立レビュー（別コンテキストのAI）が必須通過点</p>
+  </div>
+</section>
+
+<!-- ============ 特徴カード ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">FEATURES</div>
+    <h2>「祈り」ではなく、仕組みで品質を守る</h2>
+    <p class="sec-desc">すべての特徴は一次情報の調査と実機検証、そして実プロジェクトのE2E検証に基づいています（根拠は DECISIONS.md に31件を記録）。</p>
+    <div class="grid">
+      <div class="card">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" stroke="#4f8cff" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#4f8cff" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>機械的ガードレール</h3>
+        <p>テンプレート破壊・危険なgit操作・シークレット混入・<b>ハーネス自身の自己改変</b>を、LLMの善意ではなくシェルフックで機械的にdeny/ask。Claude Codeでは permissions.deny との二重防御。</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.5" stroke="#38d9c3" stroke-width="2"/><circle cx="17" cy="15" r="3.5" stroke="#38d9c3" stroke-width="2"/><path d="M4 20c0-2.8 2.2-5 5-5" stroke="#38d9c3" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>独立レビュー（別セッション）</h3>
+        <p>書いた本人に自己承認させない。要件・設計は <b>spec-critic</b>、コードは <b>reviewer</b> が、まっさらな独立コンテキストでゲート前に監査。上流ほど手戻りが高くつくから、レビューは上流から。</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#b478ff" stroke-width="2"/><path d="M7 9h6M7 13h10" stroke="#b478ff" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>UIデザインゲート</h3>
+        <p>画面は実装前に自己完結型HTMLモックアップで<b>目で見て</b>承認。閲覧はブラウザで開くだけ＝トークンゼロ。「できて動かして初めてデザインが分かる」を構造的に防ぐ。</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 17V7m5.5 10V4M15 17v-6m5 6V9" stroke="#ffb454" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>コンテキストロット対策</h3>
+        <p>長い会話ほどAIの精度は落ちる。<b>docs/ が記憶、会話は使い捨て</b>。実装は task-worker が1タスク=1独立コンテキストで実行し、セッション分割基準も数値で定義済み。</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v3m0 12v3m9-9h-3M6 12H3m14.5-6.5l-2 2m-7 7l-2 2m11 0l-2-2m-7-7l-2-2" stroke="#38d9c3" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>成長ループ</h3>
+        <p>教訓は learnings.md に1行追記→<b>全セッションに自動注入</b>。リリース後の振り返りが改善提案表を生み、本体テンプレートへ還流。<b>次のプロジェクトは今日の学びから始まる</b>。</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#4f8cff" stroke-width="2"/><path d="M3 12h18M12 3c2.5 2.6 4 5.6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-5.6-4-9s1.5-6.4 4-9z" stroke="#4f8cff" stroke-width="2"/></svg></div>
+        <h3>3プラットフォーム対応</h3>
+        <p>振る舞いの正は1か所（AGENTS.md + .github/）。各環境には<b>ポインタだけの薄いアダプタ</b>を機械生成。Copilot / Claude Code / Antigravity のどこで開いても <b>/00-start-project</b> から同じ体験。</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M5 8l7-5 7 5M7 21h10" stroke="#b478ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>要件定義の専門性</h3>
+        <p>Airbus・NASAが使う<b>EARS記法</b>で曖昧語を排除、NFRは「測れる文」に定量化、前提・リスク台帳、デプロイ環境と自動化境界の聞き切り。後工程の全自動はこの厚さが支える。</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#38d9c3" stroke-width="2"/><rect x="13" y="3" width="8" height="8" rx="2" stroke="#38d9c3" stroke-width="2"/><rect x="3" y="13" width="8" height="8" rx="2" stroke="#38d9c3" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#38d9c3" stroke-width="2"/></svg></div>
+        <h3>小規模から大規模・既存まで</h3>
+        <p>単一パイプライン（小〜中）／<b>サブシステム分割＋インターフェース契約ICD</b>（大規模）／<b>as-is逆起こし</b>（既存コードベース）。規模はエージェントが判定して構造を提案。</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#ffb454" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#ffb454" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>トークンコスト最適化</h3>
+        <p>高頻度エージェントは model:auto、強モデルは設計とレビューだけ。ブラウザ検証は<b>コード化テスト主（対話型MCPの約1/4のコスト）</b>。スキルは段階的開示で必要な時だけ読み込み。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ アーキテクチャ（正+アダプタ） ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">ARCHITECTURE</div>
+    <h2>正は1か所、アダプタは薄く</h2>
+    <p class="sec-desc">
+      振る舞いの定義はすべて正のレイヤに置き、各プラットフォームには「正を読んで実行せよ」という
+      ポインタだけを機械生成します。だからドリフトせず、改善は1回で3環境に届きます。
+    </p>
+    <div class="diagram">
+      <svg viewBox="0 0 960 320" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI','Hiragino Sans',sans-serif">
+        <defs>
+          <linearGradient id="gCore" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#4f8cff" stop-opacity=".22"/>
+            <stop offset="1" stop-color="#38d9c3" stop-opacity=".22"/>
+          </linearGradient>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8" fill="none" stroke="#4f8cff" stroke-width="1.5"/>
+          </marker>
+        </defs>
+
+        <!-- 正のレイヤ -->
+        <rect x="280" y="24" width="400" height="120" rx="14" fill="url(#gCore)" stroke="#4f8cff" stroke-width="2"/>
+        <text x="480" y="52" text-anchor="middle" fill="#dce4f5" font-size="16" font-weight="800">正のレイヤ（唯一の真実）</text>
+        <g font-size="12.5" fill="#9fb0d5" text-anchor="middle">
+          <text x="480" y="76">AGENTS.md（共通指示） ・ .github/agents/（9つの役割定義）</text>
+          <text x="480" y="96">.github/prompts/（14の起動指示） ・ .github/skills/（11の手順）</text>
+          <text x="480" y="116">.github/hooks/（6つのガードフック） ・ docs/テンプレート</text>
+        </g>
+
+        <!-- アダプタ3つ -->
+        <g font-size="13.5" font-weight="700" text-anchor="middle">
+          <rect x="60"  y="216" width="240" height="80" rx="12" fill="#131b30" stroke="#4f8cff" stroke-width="1.5"/>
+          <text x="180" y="244" fill="#4f8cff">GitHub Copilot</text>
+          <text x="180" y="266" fill="#7e8cad" font-size="11.5" font-weight="500">正をネイティブに直接読む</text>
+          <text x="180" y="283" fill="#7e8cad" font-size="11.5" font-weight="500">handoffs / hooks フル対応</text>
+
+          <rect x="360" y="216" width="240" height="80" rx="12" fill="#131b30" stroke="#38d9c3" stroke-width="1.5"/>
+          <text x="480" y="244" fill="#38d9c3">Claude Code</text>
+          <text x="480" y="266" fill="#7e8cad" font-size="11.5" font-weight="500">CLAUDE.md + .claude/（ポインタ）</text>
+          <text x="480" y="283" fill="#7e8cad" font-size="11.5" font-weight="500">hooks + permissions.deny 二重ガード</text>
+
+          <rect x="660" y="216" width="240" height="80" rx="12" fill="#131b30" stroke="#b478ff" stroke-width="1.5"/>
+          <text x="780" y="244" fill="#b478ff">Antigravity</text>
+          <text x="780" y="266" fill="#7e8cad" font-size="11.5" font-weight="500">AGENTS.md + .agents/workflows/</text>
+          <text x="780" y="283" fill="#7e8cad" font-size="11.5" font-weight="500">内蔵ブラウザエージェント活用</text>
+        </g>
+
+        <!-- 矢印 -->
+        <g stroke="#4f8cff" stroke-width="1.5" fill="none" opacity=".7">
+          <path d="M 330 148 Q 240 180 190 212" marker-end="url(#arr2)"/>
+          <path d="M 480 148 L 480 212" marker-end="url(#arr2)"/>
+          <path d="M 630 148 Q 720 180 770 212" marker-end="url(#arr2)"/>
+        </g>
+        <text x="480" y="188" text-anchor="middle" fill="#7e8cad" font-size="12">tools/generate-adapters.py が機械生成（冪等）・validate-harness.py が乖離を検出</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 責任分界 ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">HUMAN × AI</div>
+    <h2>どこまでAIに任せ、どこを人が守るか</h2>
+    <p class="sec-desc">原則はひとつ——<b style="color:var(--text)">内側はAI、境界は人</b>。誤りが全体に波及する意思決定にだけ、人の注意を集中させます。</p>
+    <table class="split-table">
+      <tr><th>フェーズ / 作業</th><th>担当</th><th>人がやること</th></tr>
+      <tr><td>要件定義（ヒアリング・文書化）</td><td><span class="pill both">協働</span></td><td>質問に厚く答える＋ゲート承認</td></tr>
+      <tr><td>アーキテクチャ・詳細設計</td><td><span class="pill ai">AI</span></td><td>技術選定の相談への回答＋最終承認1回</td></tr>
+      <tr><td>UIモックアップの確認</td><td><span class="pill human">人</span></td><td>ブラウザで開いて見る（トークンゼロ）</td></tr>
+      <tr><td>実装〜テスト〜自動修復</td><td><span class="pill ai">AI</span></td><td>基本ノータッチ（真のブロッカーのみ）</td></tr>
+      <tr><td>独立レビュー（spec-critic / reviewer）</td><td><span class="pill ai">AI</span></td><td>—（別コンテキストのAIが自動監査）</td></tr>
+      <tr><td>サブシステム分割・ICD変更（大規模）</td><td><span class="pill human">人</span></td><td>必ず承認（最重要ゲート）</td></tr>
+      <tr><td>git push / タグ / デプロイ</td><td><span class="pill human">人</span></td><td>フックが確認を強制。最終意思決定</td></tr>
+      <tr><td>振り返り→ハーネス改善の適用</td><td><span class="pill both">協働</span></td><td>AIが提案表を生成、人が本体へ還流</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 成長ループ ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">GROWTH LOOP</div>
+    <h2>使うたびに賢くなる</h2>
+    <p class="sec-desc">実際にDatabricks特化の派生ハーネスがE2E検証を行い、11件の改善が本体へ還流済み。この循環自体がハーネスの一部です。</p>
+    <div class="diagram">
+      <svg viewBox="0 0 960 250" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI','Hiragino Sans',sans-serif">
+        <defs>
+          <marker id="arr3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8" fill="none" stroke="#38d9c3" stroke-width="1.6"/>
+          </marker>
+        </defs>
+        <g font-size="13.5" font-weight="700" text-anchor="middle">
+          <rect x="40" y="90" width="190" height="72" rx="12" fill="#131b30" stroke="#4f8cff" stroke-width="1.5"/>
+          <text x="135" y="120" fill="#dce4f5">開発中</text>
+          <text x="135" y="142" fill="#7e8cad" font-size="11.5" font-weight="500">教訓を learnings.md に1行</text>
+
+          <rect x="290" y="90" width="190" height="72" rx="12" fill="#131b30" stroke="#38d9c3" stroke-width="1.5"/>
+          <text x="385" y="114" fill="#dce4f5">全セッションに</text>
+          <text x="385" y="132" fill="#dce4f5">自動注入</text>
+          <text x="385" y="152" fill="#7e8cad" font-size="11.5" font-weight="500">SessionStart フック</text>
+
+          <rect x="540" y="90" width="190" height="72" rx="12" fill="#131b30" stroke="#b478ff" stroke-width="1.5"/>
+          <text x="635" y="114" fill="#dce4f5">リリース後</text>
+          <text x="635" y="132" fill="#dce4f5">/10-retrospective</text>
+          <text x="635" y="152" fill="#7e8cad" font-size="11.5" font-weight="500">改善提案表を自動生成</text>
+
+          <rect x="780" y="90" width="160" height="72" rx="12" fill="#131b30" stroke="#ffb454" stroke-width="1.5"/>
+          <text x="860" y="114" fill="#dce4f5">本体へ還流</text>
+          <text x="860" y="134" fill="#7e8cad" font-size="11.5" font-weight="500">DECISIONS.md に</text>
+          <text x="860" y="150" fill="#7e8cad" font-size="11.5" font-weight="500">根拠つき記録</text>
+        </g>
+        <g stroke="#38d9c3" stroke-width="1.6" fill="none">
+          <line x1="230" y1="126" x2="286" y2="126" marker-end="url(#arr3)"/>
+          <line x1="480" y1="126" x2="536" y2="126" marker-end="url(#arr3)"/>
+          <line x1="730" y1="126" x2="776" y2="126" marker-end="url(#arr3)"/>
+          <path d="M 860 162 Q 860 225 480 225 Q 135 225 135 166" stroke-dasharray="6 5" marker-end="url(#arr3)"/>
+        </g>
+        <text x="480" y="212" text-anchor="middle" fill="#38d9c3" font-size="12.5" font-weight="600">次のプロジェクトは、改善済みのテンプレートから始まる</text>
+        <text x="480" y="46" text-anchor="middle" fill="#7e8cad" font-size="12.5">「言ったのに忘れられる」が起きない —— 記録は書いた瞬間から機械的に効く</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ クイックスタート ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">QUICK START</div>
+    <h2>始め方は3ステップ</h2>
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(260px,1fr));">
+      <div class="card"><h3 style="color:var(--accent)">1. テンプレートから作成</h3><p>GitHubの「Use this template」で新規リポジトリを作り、VS Code / Claude Code / Antigravity のいずれかで開く。追加設定は不要。</p></div>
+      <div class="card"><h3 style="color:var(--accent2)">2. 要件メモを雑に書く</h3><p><b>requirements/memo.md</b> に作りたいものを思いつくまま書く。丁寧である必要はない——ここから先はエージェントが質問して埋めていく。</p></div>
+      <div class="card"><h3 style="color:var(--accent3)">3. /00-start-project</h3><p>あとは案内に従うだけ。次に何をすべきかは常にエージェントが1行で提示する。迷ったら <b>/98-harness-help</b>。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ フッター ============ -->
+<footer>
+  <div class="wrap">
+    <div class="links">
+      <a href="README.md">README（全体構造）</a>
+      <a href="USAGE.md">USAGE（実例つき使い方）</a>
+      <a href="DECISIONS.md">DECISIONS（31件の設計判断と根拠）</a>
+      <a href="AGENTS.md">AGENTS.md（共通指示の正）</a>
+    </div>
+    <p>copilot-sdlc-harness — 品質とトークンコストのバランスをとった、成長し続けるAI開発ハーネス。<br>
+    このページは自己完結型HTML（ビルド不要・外部依存なし）。このハーネスのUIデザインゲートと同じ思想で作られています。</p>
+  </div>
+</footer>
+
+</body>
+</html>
