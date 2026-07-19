@@ -83,6 +83,20 @@ Copilot用 `.vscode/mcp.json`（無ければ新規作成）:
 }
 ```
 
+### E2E設計の既知の落とし穴（ブラウザ自動化固有）
+
+実ブラウザの自動化には、ユニットテストの感覚のまま書くと初回実行で失敗する
+仕様上の壁がある。テストコードを書く前に以下を前提にする（実プロジェクトの
+E2E初回実行で複数件の失敗原因になった実測知見）。
+
+- **HTML5 ドラッグ&ドロップはマウス合成イベントでは発火しない**:
+  `mouse.down → move → up` では dragstart/drop イベントは起きない。
+  `DataTransfer` を持たせた `DragEvent`（dragstart/dragover/drop）を
+  対象要素へ直接 dispatch して代替する。
+- **headless ブラウザは beforeunload の確認ダイアログを表示しない**:
+  「離脱警告が出ること」の検証は、reload を発行して dialog イベント
+  （Playwright なら `page.on('dialog')`）を待ち受ける形で行う。
+
 ### 手順
 
 1. 主要なユーザーフロー（受け入れ条件に対応）ごとにPlaywrightテストコードを実装し、

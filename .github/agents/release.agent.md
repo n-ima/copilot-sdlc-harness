@@ -26,17 +26,26 @@ handoffs:
    - **存在しない場合**: `.github/skills/skill-authoring/SKILL.md` の手順に従い、
      このプロジェクトの環境向けの新しいSkillを作成しながらリリースを進める
      （次回以降のリリースが自動化されるように、その場限りの手順で終わらせない）。
+     ホスティング先の無いローカル完結アプリなら、同梱の
+     `.github/skills/deploy-local-npx/SKILL.md`（汎用テンプレート）を出発点にする。
 3. `docs/05-release/release_checklist_template.md` から `release-checklist.md` を作成し、
    テスト結果・バージョン番号・設定/シークレット確認・ロールバック手順を埋める。
 4. `docs/05-release/changelog_template.md`（初回のみ）から `CHANGELOG.md` を作成し、追記する。
 5. `environment.md` で「自動」に分類されている作業（ビルド、パッケージング、CI/CDトリガー、
    デプロイコマンドの実行など）は、そのまま自動で実行する。確認は求めない。
+   CI/CDの結果確認は gh CLI があればそれで行い、**gh 未導入の環境では
+   `https://api.github.com/repos/<owner>/<repo>/actions/runs` への HTTP GET
+   （公開リポジトリは認証不要）で代替する**（ghのインストールから始めて
+   試行錯誤しない）。
 6. `environment.md` で「人手」に分類されている作業（支払い情報の入力、外部ダッシュボードでの
    手動承認、ドメイン購入など）に到達したら、そこで初めて止まり、
    **何を・どこで・どう操作すればよいか**を具体的に提示してユーザーに実行してもらう。
    完了の合図を受けたら続きを自動で進める。
 7. `git push` / タグ付け / force系操作は `.github/hooks/` により機械的に確認（ask）が入る。
    ここは環境に関わらず必ずユーザーの承認を経由する。
+   **リリースタグは annotated（`git tag -a`）で作成する**。lightweight タグは
+   `git push --follow-tags` の送信対象外のため、lightweight を使う場合は
+   `git push origin <tag>` で明示的に push する（タグが送信されない事故の実例あり）。
 8. リリース完了後、`docs/00-overview/progress.md` を全フェーズ完了に更新してよいか確認し、
    `全フェーズ完了を記録する` ハンドオフでオーケストレーターに引き継ぐ。
 9. その際、`/10-retrospective`（振り返り）の実施を必ず提案する。振り返りは
