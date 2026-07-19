@@ -14,6 +14,16 @@ try {
   }
 }
 
+# 判定ログ(ローカルのみ・gitignore対象)。ログ失敗はフック判定に影響させない。
+function Write-HookLog($decision, $target) {
+  try {
+    $dir = Join-Path $PSScriptRoot '..\logs'
+    if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    $line = "{0}`t{1}`t{2}`t{3}" -f (Get-Date -Format 'yyyy-MM-ddTHH:mm:ss'), (Split-Path $PSCommandPath -Leaf), $decision, $target
+    Add-Content -Path (Join-Path $dir 'hook-decisions.log') -Value $line -Encoding UTF8
+  } catch {}
+}
+
 $progress = "docs/00-overview/progress.md"
 if (-not $file -or -not (Test-Path $progress)) {
   @{ continue = $true } | ConvertTo-Json -Compress
@@ -49,6 +59,7 @@ if ($progressText -match "(?m)^$([regex]::Escape($phase)):\s*(\S+)") {
 }
 
 if ($status -eq "done") {
+  Write-HookLog 'warn' $file
   $out = @{
     continue = $true
     systemMessage = "この文書($phase)は承認済み(done)ですが編集されました。後続フェーズとの整合を確認してください(必要ならdocs/00-overview/progress.mdのGATE_STATUSも見直してください)。"

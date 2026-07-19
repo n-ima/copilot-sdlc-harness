@@ -524,3 +524,45 @@
   ガードは当時より強くなっている）。適用は CLAUDE.md 記載の正規手順どおり、
   人間が deny 行4行を一時的に外し、適用後に復元した。
 - **運用ルール確認**: reviewer で2回以上出た同種指摘は該当なし（B-1の昇格対象なし）。
+
+## D033: Team Operations Hub v1.0.0 振り返りからの還流（成長ループ3周目）
+
+- **出典**: Team Operations Hub v1.0.0 の `/10-retrospective`（2026-07-19実施）による
+  改善提案4件。ユーザーの明示指示のもと適用した。実装〜テスト区間の人的ブロッカー0回・
+  テスト起因のプロダクト修正0件・上流指摘（要件MAJOR 7/設計MAJOR 4）を全てゲート前に
+  解消という、D032（Dagram）に続き「上流で検出し下流でゼロ」を再現したプロジェクト。
+- **適用した項目**:
+  1. **windows-shell-conventions スキルを新設**: Windows + Git Bash + PowerShell 併用環境の
+     既知の落とし穴7種（ドライブレター大小文字・`git stash -u`×autocrlf のCRLF事故・
+     PowerShellインライン呼び出しの構文崩壊・curl 日本語ボディの文字化け・
+     heredoc/Edit のバックスラッシュ破壊・Volta シムと環境変数差し替え・
+     パイプの SIGPIPE）を汎用スキルとして集約。内容は同プロジェクトの
+     `learnings.md`（2026-07-13〜07-17）の実記録から固有値を除いて汎用化した。
+     共通原則「複雑なワンライナーを書かずスクリプトファイルにする」を冒頭に明記。
+     プロジェクトごとの再発見コスト（うち1件は実プロダクトバグ化）を解消する。
+  2. **フック判定ログ**: 判定を持つ全フックスクリプト（guard 4種 + warn-stale-gate、
+     bash/PowerShell 両系統の計10ファイル）に、deny/ask/warn 判定時のみ
+     `.github/hooks/logs/hook-decisions.log`（gitignore対象・ローカルのみ）へ
+     日時・スクリプト名・判定・対象を1行追記する処理を追加。振り返りの
+     「フック発火回数と誤検知」項目が2プロジェクト連続で「不明」だった穴を塞ぐ。
+     設計上の要点: (a) ログ失敗はフック判定に影響させない（フェイルセーフ）、
+     (b) **guard-secret-leak はシークレット本文を絶対にログへ書かず**パターン種別のみ
+     記録、(c) 許可(allow)時は記録しない（ノイズと肥大化の防止）。
+     D012の教訓に従い、適用前(scratchpad)と適用後(本番パス)の両方で bash/ps1 とも
+     サンプルペイロードによる実機検証を行い、判定JSONが原本と同一であることと
+     ログ追記・BOM保持を確認した。
+  3. **requirements-elicitation に「画面横断の仕様を先に確認する」節を追加**:
+     複数行テキスト項目の役割分担・一覧/ガント等の共通UI規約（フィルタ・トグル・
+     遷移導線）・主用途の重み付けを要件定義段階で確認する。モックアップレビューで
+     都度発覚するとユーザー指示の往復が画面数ぶん増える（実測: 6巡）ため、
+     ui-design-mockup（D023/D032-1）の往復回数を上流で減らす。
+  4. **重大度語彙の対応表**: spec-critic（BLOCKER/MAJOR/MINOR）と
+     reviewer/security-review（CRITICAL/HIGH/MEDIUM/LOW/INFO）の読み替え
+     （BLOCKER≒CRITICAL/HIGH、MAJOR≒MEDIUM、MINOR≒LOW/INFO）を
+     security-review スキルに追記。語彙の統一はしない（両者の出典・用途が異なり、
+     振り返りの集計には対応表で足りるため）。
+- **還流しなかったもの**: stack-conventions（Team Operations Hub 固有。
+  「mdファイルをデータストアとして扱う保全パターン」の一般化は、同種アプリの
+  2例目が出た時点で判断する）。
+- **適用手順**: D032と同じ正規手順（人間が `.claude/settings.json` の該当deny行
+  = 今回は `.github/hooks/**` の2行を一時的に外し、適用後に復元）。

@@ -4,6 +4,12 @@
 input=$(cat)
 file=$(printf '%s' "$input" | grep -oE '"(file_path|filePath|path)"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed -E 's/.*:[[:space:]]*"([^"]*)"/\1/')
 
+# 判定ログ(ローカルのみ・gitignore対象)。ログ失敗はフック判定に影響させない。
+hook_log() {
+  { d="$(dirname "$0")/../logs" && mkdir -p "$d" &&
+    printf '%s\t%s\t%s\t%s\n' "$(date +%Y-%m-%dT%H:%M:%S)" "$(basename "$0")" "$1" "$2" >>"$d/hook-decisions.log"; } 2>/dev/null || true
+}
+
 progress="docs/00-overview/progress.md"
 if [[ -z "$file" || ! -f "$progress" ]]; then
   printf '%s\n' '{"continue": true}'
@@ -27,6 +33,7 @@ fi
 status=$(grep -E "^${phase}:" "$progress" | head -1 | sed -E "s/^${phase}:[[:space:]]*//")
 
 if [[ "$status" == "done" ]]; then
+  hook_log warn "$file"
   printf '{"continue": true, "systemMessage": "この文書(%s)は承認済み(done)ですが編集されました。後続フェーズとの整合を確認してください（必要ならdocs/00-overview/progress.mdのGATE_STATUSも見直してください）。"}\n' "$phase"
 else
   printf '%s\n' '{"continue": true}'
